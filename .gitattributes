@@ -1,0 +1,2 @@
+LoisBench/LoisBench/electron-linux/blazorelectronapp filter=lfs diff=lfs merge=lfs -text
+LoisBench/LoisBench/electron-windows/blazorelectronapp.exe filter=lfs diff=lfs merge=lfs -text

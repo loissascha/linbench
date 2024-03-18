@@ -1,0 +1,69 @@
+@page "/cpubench"
+@implements IDisposable
+@using LoisBench.Services
+@using System.Timers
+@rendermode InteractiveServer
+
+<PageTitle>Lois CPU Benchmark</PageTitle>
+
+<h1>CPU Bench</h1>
+Welcome to CPU Benchmark
+<br /><br />
+@if (CpuBenchService.SingleCoreBenchResult > 0)
+{
+    <p>SingleCore Result: @CpuBenchService.SingleCoreBenchResult</p>
+}
+@if (CpuBenchService.MultiCoreBenchResult > 0)
+{
+    <p>MultiCore Result: @CpuBenchService.MultiCoreBenchResult</p>
+}
+<br /><br />
+
+@_workingMessage
+<button @onclick="StartCpuBenchmark">Start Benchmark</button>
+
+@code {
+    private string _workingMessage = "";
+    
+    private Timer? _timer;
+
+    public CpuBench()
+    {
+        UpdateUi();
+        _timer = new System.Timers.Timer(100);
+        _timer.Elapsed += async (s, e) =>
+        {
+            UpdateUi();
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
+    }
+
+    void IDisposable.Dispose()
+    {
+        _timer!.Enabled = false;
+    }
+
+    private void UpdateUi()
+    {
+        if (CpuBenchService.SingleCoreBenchRunning)
+        {
+            _workingMessage = "Calculating SingleCore Benchmark...";
+        }
+        else if (CpuBenchService.MultiCoreBenchRunning)
+        {
+            _workingMessage = "Calculating MultiCore Benchmark...";
+        }
+        else
+        {
+            _workingMessage = "";
+        }
+    }
+
+    private void StartCpuBenchmark()
+    {
+        CpuBenchService.StartBench = true;
+        UpdateUi();
+    }
+    
+}

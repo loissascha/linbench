@@ -1,0 +1,43 @@
+@page "/systeminfo"
+@implements IDisposable
+@using LoisBench.Services
+@using System.Timers
+@rendermode InteractiveServer
+
+<PageTitle>System - Lois CPU Benchmark</PageTitle>
+
+<h1>System Info</h1>
+This page shows system information
+<br /><br />
+OS: @SystemMonitorService.OSName
+@if (SystemMonitorService.OSVersion != "")
+{
+    <br/>
+    @:OSVersion: @SystemMonitorService.OSVersion
+}
+<br /><br />
+CPU Model: @SystemMonitorService.CpuName<br />
+CPU Usage: @SystemMonitorService.CpuUsage%
+<br /><br />
+Memory Usage: @SystemMonitorService.MemoryUsage MB / @SystemMonitorService.MemoryTotal MB
+
+
+@code {
+
+    private Timer? _timer;
+
+    public SystemInfo()
+    {
+        _timer = new System.Timers.Timer(300);
+        _timer.Elapsed += async (s, e) =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Enabled = true;
+    }
+
+    void IDisposable.Dispose()
+    {
+        _timer!.Enabled = false;
+    }
+}
